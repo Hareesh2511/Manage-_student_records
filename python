@@ -1,0 +1,77 @@
+import mysql.connector
+
+# Connect to MySQL
+conn = mysql.connector.connect(
+    host="localhost",
+    user="root",      # change if needed
+    password="",      # your MySQL password
+    database="studentdb"
+)
+cursor = conn.cursor()
+
+def add_student():
+    name = input("Enter student name: ")
+    email = input("Enter student email: ")
+    course = input("Enter course: ")
+    sql = "INSERT INTO students (name, email, course) VALUES (%s, %s, %s)"
+    values = (name, email, course)
+    cursor.execute(sql, values)
+    conn.commit()
+    print("✅ Student added successfully!")
+
+def view_students():
+    cursor.execute("SELECT * FROM students")
+    rows = cursor.fetchall()
+    print("\n--- Student Records ---")
+    for row in rows:
+        print(f"ID: {row[0]}, Name: {row[1]}, Email: {row[2]}, Course: {row[3]}")
+    print("-----------------------\n")
+
+def update_student():
+    student_id = int(input("Enter student ID to update: "))
+    name = input("Enter new name: ")
+    email = input("Enter new email: ")
+    course = input("Enter new course: ")
+    sql = "UPDATE students SET name=%s, email=%s, course=%s WHERE id=%s"
+    values = (name, email, course, student_id)
+    cursor.execute(sql, values)
+    conn.commit()
+    print("✅ Student updated successfully!")
+
+def delete_student():
+    student_id = int(input("Enter student ID to delete: "))
+    sql = "DELETE FROM students WHERE id=%s"
+    cursor.execute(sql, (student_id,))
+    conn.commit()
+    print("✅ Student deleted successfully!")
+
+def menu():
+    while True:
+        print("\n--- Student Management System ---")
+        print("1. Add Student")
+        print("2. View Students")
+        print("3. Update Student")
+        print("4. Delete Student")
+        print("5. Exit")
+        
+        choice = input("Enter your choice: ")
+        
+        if choice == "1":
+            add_student()
+        elif choice == "2":
+            view_students()
+        elif choice == "3":
+            update_student()
+        elif choice == "4":
+            delete_student()
+        elif choice == "5":
+            print("Exiting program...")
+            break
+        else:
+            print("❌ Invalid choice, try again!")
+
+# Run program
+menu()
+
+cursor.close()
+conn.close()
